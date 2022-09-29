@@ -1,1 +1,3 @@
-# viz_and_eda
+# VIZ and EDA
+
+This is the repo for viz and eda

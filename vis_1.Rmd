@@ -3,11 +3,18 @@ title: "viz_and_eda"
 output: html_document
 date: "2022-09-29"
 ---
+
+# what's this
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 ```{r}
 library(tidyverse)
 library(ggridges)
 ```
 
+# what is select
 ```{r}
 weather_df = 
   rnoaa::meteo_pull_monitors(
@@ -26,9 +33,117 @@ weather_df =
   select(name, id, everything())
 ```
 
-```{r}
-weather_df %>%
-  ggplot(aes(x = tmin, y = tmax)) + 
+```{r chunk_an alternative way}
+weather_scatterplot=
+  weather_df %>%
+    drop_na() %>% 
+    filter(name == "CentralPark_NY") %>% 
+    ggplot(aes(x = tmin, y = tmax)) + 
+    geom_point()
+weather_scatterplot
+
+# about color moving around_same
+ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) + 
   geom_point()
+
+ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name))
+
+# about color moving around_different
+ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) +
+  geom_smooth(se = FALSE)
+
+ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)
+
+# seperate panels
+ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ name)
+
+# another way of the last line!!
+ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
+  geom_point(aes(size = prcp), alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ name)
+
+weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name))+
+  geom_point(aes(size = prcp), alpha = .3)+
+  geom_smooth(se = FALSE)+
+  facet_grid(. ~ name)
 ```
+
+
+```{r chunk_LA, eval = FALSE}
+weather_df %>% 
+  mutate(COVERT TO FAHRENHEIT)
+```
+
+```{r}
+ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
+  geom_smooth(se = FALSE) 
+
+ggplot(weather_df, aes(x = tmax, y = tmin)) + 
+  geom_hex()
+```
+
+```{r chunk_histogram & density}
+ggplot(weather_df, aes(x = tmax)) + 
+  geom_histogram()
+
+weather_df %>% 
+  ggplot(aes(x = tmax, fill = name))+
+  geom_histogram()+
+  facet_grid(. ~ name)
+
+ggplot(weather_df, aes(x = tmax, color = name)) + 
+  geom_histogram(position = "dodge", binwidth = 2)
+
+ggplot(weather_df, aes(x = tmax, fill = name)) + 
+  geom_density(alpha = .4, adjust = .5, color = "blue")
+```
+
+
+```{r chunk_boxplot & violin}
+ggplot(weather_df, aes(x = name, y = tmax)) + geom_boxplot()
+
+weather_df %>% 
+  drop_na() %>% 
+  ggplot(aes(y = tmax))+
+  geom_boxplot()
+
+# use violinplot when having many groups for comparing
+ggplot(weather_df, aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), alpha = .5) + 
+  stat_summary(fun = "median", color = "blue")
+
+ggplot(weather_df, aes(x = tmax, y = name)) + 
+  geom_density_ridges(scale = .85)
+
+weather_df %>% 
+  ggplot(aes(x = tmax, y= name))+
+  geom_density_ridges(scale = 5)
+```
+
+```{r}
+weather_scatterplot=
+  weather_df %>%
+    drop_na() %>% 
+    filter(name == "CentralPark_NY") %>% 
+    ggplot(aes(x = tmin, y = tmax)) + 
+    geom_point()
+ggsave(
+  "results/scatterplot.pdf", weather_scatterplot,
+  width = 5)
+```
+
+```{r, fig.width = 10}
+weather_scatterplot
+```
+
+
 
