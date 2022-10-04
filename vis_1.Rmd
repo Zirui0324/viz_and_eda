@@ -141,9 +141,12 @@ ggsave(
   width = 5)
 ```
 
+
 ```{r, fig.width = 10}
+# better to define at the beginning instead of defining each time
 weather_scatterplot
 ```
+
 
 
 
